@@ -4,11 +4,10 @@ const transporter = nodemailer.createTransport({
     host: 'smtp.ethereal.email',
     port: 587,
     auth: {
-        user: 'alphonso.gerhold@ethereal.email',
-        pass: 'bhxja1AhcMS7BVyDuV'
+        user: 'elvie.hills@ethereal.email',
+        pass: 'bunk7XdXRwU7JYC4Zc'
     }
 });
-
 /**
  * Kayıt olan kullanıcıya karşılama e-postası gönderir.
  * @param {string} to - Alıcının e-posta adresi
