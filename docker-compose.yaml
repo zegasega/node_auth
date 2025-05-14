@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  mariadb-auth:
+    image: mariadb:latest
+    container_name: mariadb_auth_container
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: auth_db
+      MYSQL_USER: auth_user
+      MYSQL_PASSWORD: auth_pass
+    ports:
+      - "3307:3306"  # Localde 3307, container içinde yine 3306
+    volumes:
+      - mariadb_auth_data:/var/lib/mysql
+    networks:
+      - auth_network
+    restart: unless-stopped
+
+volumes:
+  mariadb_auth_data:
+
+networks:
+  auth_network:
+    driver: bridge
