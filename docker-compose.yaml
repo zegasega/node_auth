@@ -3,7 +3,7 @@ version: '3.8'
 services:
   mariadb-auth:
     image: mariadb:latest
-    container_name: mariadb_auth_container
+    container_name: mariadb_auth_container2
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_DATABASE: auth_db

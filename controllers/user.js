@@ -1,12 +1,40 @@
 const { where } = require("sequelize");
-const { User, PasswordReset } = require("../db/config");
+const { User, PasswordReset, VerifyAcoount } = require("../db/config");
 const bcrypt = require('bcrypt');
 const { generateAccessToken, generateRefreshToken } = require("../middleware/auth");
 const { sendResetCodeEmail } = require("../services/email");
 const moment = require('moment');
 
 
+const verifyAccount = async (req, res) => {
+  const { email, verificationCode } = req.body;
 
+  try {
+    const user = await User.findOne({ where: { email } });
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    const codeRecord = await VerifyAcoount.findOne({
+      where: { userId: user.id, resetToken: verificationCode.toString() }
+    });
+
+    if (!codeRecord) {
+      return res.status(400).json({ message: "Invalid verification code." });
+    }
+
+    user.isVerified = true;
+    await user.save();
+
+    await codeRecord.destroy();
+
+    return res.status(200).json({ message: "Account verified successfully." });
+
+  } catch (error) {
+    console.error("Error verifying account:", error);
+    return res.status(500).json({ message: "An error occurred. Please try again." });
+  }
+};
 
 const createNewPassword = async (req, res) => {
     const { email, verificationCode, newPassword } = req.body;
@@ -112,6 +140,16 @@ const register = async (req, res) => {
       }
     });
 
+    // VerifyAcoount
+    const verificationCode = generateFourDigitNumber();
+
+    await VerifyAcoount.create({
+      userId: newUser.id,
+      resetToken: verificationCode.toString(),
+    });
+    await sendResetCodeEmail(email, verificationCode);
+
+
   } catch (error) {
     console.error('Registration error:', error);
     res.status(500).json({ message: 'Internal server error' });
@@ -171,4 +209,5 @@ module.exports = {
     getAllUsers,
     resetPassword,
     createNewPassword,
+    verifyAccount,
 }
